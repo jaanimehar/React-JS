@@ -11,6 +11,48 @@ import run from "../config/gemini";
     const[showResult, setShowResult]=useState(false);
     const[loading,setLoading]=useState(false);
     const[resultData,setResultData]=useState("");
+    const [isListening, setIsListening] = useState(false);
+
+    // Initialize SpeechRecognition
+  const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+
+  recognition.lang = "en-US"; // Set language
+  recognition.interimResults = false; // Wait for final results
+
+// Start listening function
+  const startListening = () => {
+  setIsListening(true);
+  recognition.start();
+  };
+
+// Stop listening function
+  const stopListening = () => {
+  setIsListening(false);
+  recognition.stop();
+  };
+
+  // Handle recognition results
+  recognition.onresult = (event) => {
+    const transcript = Array.from(event.results)
+      .map((result) => result[0].transcript)
+      .join("");
+    setInput((prev) => `${prev} ${transcript}`.trim()); // Append new speech
+  };
+
+  // Handle recognition end
+  recognition.onend = () => {
+    setIsListening(false);
+  };
+
+  // Handle recognition errors
+  recognition.onerror = (event) => {
+    console.error("Speech recognition error:", event.error);
+    setIsListening(false);
+  };
+
+
 
     const delayPara=(index,nextWord)=>{
         setTimeout(() => {
@@ -41,9 +83,6 @@ import run from "../config/gemini";
             setRecentPrompt(input)
             response=await run(input);
         }
-    //     setRecentPrompt(input)
-    //     setPrevPrompts(prev=>[...prev,input])
-    //    const response= await run(input)
        let responseArray=response.split("**");
        let newResponse="";
        for(let i=0; i<responseArray.length; i++)
@@ -77,7 +116,12 @@ import run from "../config/gemini";
         resultData,
         input,
         setInput,
-        newChat
+        isListening,
+        setIsListening,
+        newChat,
+        startListening,
+        stopListening
+
 
     }
     return(

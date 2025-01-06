@@ -5,7 +5,7 @@ import { useContext } from 'react'
 
 const main = () => {
 
-  const{onSent, recentPrompt, showResult, loading, resultData, setInput, input}=useContext(Context)
+  const{onSent, recentPrompt, showResult, loading, resultData, setInput, input, isListening, stopListening, startListening}=useContext(Context)
   return (
     <div className="main">
         <div className="nav">
@@ -65,7 +65,7 @@ const main = () => {
               <input onChange={(e)=>setInput(e.target.value)} value={input} type='text' placeholder='Ask Me'/>
               <div>
                 <img src={assets.gallery_icon} alt="" />
-                <img src={assets.mic_icon} alt="" />
+                <img  onClick={isListening ? stopListening:startListening} src={assets.mic_icon} alt="" />
                 {input?<img onClick={()=>onSent()} src={assets.send_icon} alt="" />:null}
               </div>
             </div>
